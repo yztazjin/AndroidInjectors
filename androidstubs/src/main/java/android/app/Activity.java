@@ -1,6 +1,8 @@
 package android.app;
 
+import android.content.Context;
 import android.view.View;
+import android.view.Window;
 
 /**
  * Author: hjq
@@ -9,13 +11,17 @@ import android.view.View;
  * Intro : Edit By hjq
  * Version : 1.0
  */
-public class Activity {
+public class Activity extends Context {
 
     public void setContentView(int layoutResID) {
         throw new RuntimeException("Stub!");
     }
 
     public void setContentView(View view) {
+        throw new RuntimeException("Stub!");
+    }
+
+    public Window getWindow() {
         throw new RuntimeException("Stub!");
     }
 }

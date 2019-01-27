@@ -10,10 +10,10 @@ import android.view.ViewGroup;
  * Intro : Edit By hjq
  * Version : 1.0
  */
-public interface InflateInjector {
+public interface InflateInjector<T> {
 
-    void inject(Object target);
+    void inject(T target);
 
-    View injectGlue(Object target, ViewGroup mContainer);
+    View injectGlue(T target, ViewGroup mContainer);
 
 }

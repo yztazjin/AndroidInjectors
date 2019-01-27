@@ -1,5 +1,8 @@
 package com.small.tools.annotationprocessor.extractor.inflate;
 
+import android.app.Activity;
+import android.view.ViewGroup;
+
 import com.small.tools.annotationprocessor.annos.BindLayout;
 import com.small.tools.annotationprocessor.annos.BindView;
 import com.small.tools.annotationprocessor.annos.aar.BindLayout2;
@@ -93,44 +96,42 @@ public class InflaterClass {
             lines.append(tmp);
         }
 
-        lines.append("public class ")
-                .append(getSimpleName()).append(SPACE)
-                .append("implements").append(SPACE).append("InflateInjector").append(" {\n");
+        String template = getTypeElement().getQualifiedName().toString();
 
-        lines.append(TAB).append("public void inject(Object target) {\n");
-        lines.append("ViewGroup mContentView = null;");
-        lines.append("if (Activity.class.isInstance(target)){\n");
-        lines.append("mContentView = new FrameLayout((Context)target);\n");
-        lines.append("injectGlue(target, mContentView);\n");
-        lines.append("InjectorSupports.setContentView((Activity)target, mContentView);\n")
-                .append("\n} else if (ViewGroup.class.isInstance(target)){\n")
-                .append("mContentView = (ViewGroup)target;\n")
-                .append("injectGlue(target, mContentView);\n")
-                .append("}");
+        lines.append("public class ")
+                .append(getSimpleName())
+                .append("<")
+                .append(" T extends ")
+                .append(template)
+                .append(" >")
+                .append(SPACE)
+                .append("implements")
+                .append(SPACE)
+                .append("InflateInjector")
+                .append("<T>")
+                .append(" {\n");
+
+        // method inject
+        lines.append(TAB).append("public void inject(T target) {\n");
+        lines.append("if (target == null) return;\n");
+        lines.append("InjectorSupports.inject(this, target);\n");
         lines.append(TAB).append("}\n");
 
-        lines.append(TAB).append("public View injectGlue(Object target, ViewGroup mContentView) {\n");
+        // method injectGlue
+        lines.append(TAB).append("public View injectGlue(T target, ViewGroup mContentView) {\n");
+        lines.append("if (target == null) return null;\n");
         lines.append("if (mContentView != null) {\n");
         lines.append("Context mContext = mContentView.getContext();\n");
         lines.append(mContentView.injectContentView());
         lines.append("} else {\n");
-        lines.append("if (Activity.class.isInstance(target)){\n");
-        lines.append("mContentView = (ViewGroup)((Activity)target).getWindow().getDecorView();\n");
-        lines.append("\n} else if (ViewGroup.class.isInstance(target)){\n")
-                .append("mContentView = (ViewGroup)target;\n")
-                .append("}");
+        lines.append("mContentView = InjectorSupports.getContentView(target);\n");
         lines.append("}\n");
         lines.append("findViews(target, mContentView);\n");
         lines.append("return mContentView;\n");
         lines.append("}\n");
 
-        lines.append(TAB).append("private void findViews(Object object, View contentView) {\n");
+        lines.append(TAB).append("private void findViews(T target, View contentView) {\n");
         lines.append("Context mContext = contentView.getContext();\n");
-        String strParentType = getTypeElement().getQualifiedName().toString();
-        lines.append(strParentType)
-                .append(" target =")
-                .append("(").append(strParentType).append(")")
-                .append("object;\n");
         for (InflaterChildView tmp : mSubViews) {
             if (tmp.isLayout()) {
                 lines.append(tmp.findLayout());
