@@ -1,8 +1,10 @@
 package com.small.tools.annotationprocessor;
 
+import com.small.tools.annotationprocessor.annos.BindClick;
 import com.small.tools.annotationprocessor.annos.BindContent;
 import com.small.tools.annotationprocessor.annos.BindLayout;
 import com.small.tools.annotationprocessor.annos.BindView;
+import com.small.tools.annotationprocessor.annos.aar.BindClick2;
 import com.small.tools.annotationprocessor.annos.aar.BindContent2;
 import com.small.tools.annotationprocessor.annos.aar.BindLayout2;
 import com.small.tools.annotationprocessor.annos.aar.BindView2;
@@ -62,10 +64,12 @@ public class SimpleProcessor extends AbstractProcessor {
                 add(BindLayout.class.getCanonicalName());
                 add(BindContent.class.getCanonicalName());
                 add(BindView.class.getCanonicalName());
+                add(BindClick.class.getCanonicalName());
 
                 add(BindLayout2.class.getCanonicalName());
                 add(BindContent2.class.getCanonicalName());
                 add(BindView2.class.getCanonicalName());
+                add(BindClick2.class.getCanonicalName());
             }
         };
 

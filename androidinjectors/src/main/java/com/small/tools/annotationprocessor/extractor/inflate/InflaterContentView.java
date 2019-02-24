@@ -37,7 +37,7 @@ public class InflaterContentView {
         }
     }
 
-    public String getId() {
+    private String getId() {
         return mId;
     }
 

@@ -2,10 +2,12 @@ package com.small.tools.demo;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.widget.FrameLayout;
+import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import com.small.tools.annotationprocessor.Injectors;
+import com.small.tools.annotationprocessor.annos.BindClick;
 import com.small.tools.annotationprocessor.annos.BindContent;
 import com.small.tools.annotationprocessor.annos.BindView;
 
@@ -21,6 +23,7 @@ public class MainActivity extends Activity {
         // 1.
         Injectors.inject(this);
         tv_hello.setText("injectors");
+        new DemoObject(this);
 
         // 2.
         // DemoLayout dl = new DemoLayout(this);
@@ -33,5 +36,10 @@ public class MainActivity extends Activity {
         // Injectors.injectGlue(this, fm);
         // setContentView(fm);
         // tv_hello.setText("injectors");
+    }
+
+    @BindClick(R.id.tv_hello)
+    void onClick(View view, int i, float b, String a, Object o) {
+        Log.e("test", "tv_hello click "+view+" i "+i+" b "+b+" a "+a+" o "+o);
     }
 }

@@ -1,7 +1,5 @@
 package com.small.tools.annotationprocessor;
 
-import android.app.Activity;
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -59,7 +57,6 @@ public class Injectors {
                 Class clazz = Class.forName(injectorClass);
                 injector = (InflateInjector) clazz.newInstance();
                 mInflaterCaches.put(injectorClass, injector);
-                return injector;
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
@@ -69,7 +66,7 @@ public class Injectors {
             }
         }
 
-        return null;
+        return injector;
     }
 
 }

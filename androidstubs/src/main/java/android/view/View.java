@@ -19,4 +19,11 @@ public class View {
         throw new RuntimeException("Stub!");
     }
 
+    public interface OnClickListener {
+        void onClick(View var1);
+    }
+
+    public void setOnClickListener(View.OnClickListener l) {
+        throw new RuntimeException("Stub!");
+    }
 }

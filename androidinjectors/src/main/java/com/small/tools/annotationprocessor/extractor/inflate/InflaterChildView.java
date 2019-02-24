@@ -48,12 +48,12 @@ public class InflaterChildView {
         }
     }
 
-    public String getFieldName() {
+    private String getFieldName() {
 
         return mFiledName;
     }
 
-    public String getId() {
+    private String getId() {
 
         return mId;
     }

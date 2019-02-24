@@ -1,10 +1,9 @@
 package com.small.tools.annotationprocessor.extractor.inflate;
 
-import android.app.Activity;
-import android.view.ViewGroup;
-
+import com.small.tools.annotationprocessor.annos.BindClick;
 import com.small.tools.annotationprocessor.annos.BindLayout;
 import com.small.tools.annotationprocessor.annos.BindView;
+import com.small.tools.annotationprocessor.annos.aar.BindClick2;
 import com.small.tools.annotationprocessor.annos.aar.BindLayout2;
 
 import static com.small.tools.annotationprocessor.extractor.SimpleSymbols.*;
@@ -14,8 +13,8 @@ import java.util.ArrayList;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 
 /**
  * Author: hjq
@@ -36,18 +35,22 @@ public class InflaterClass {
             "import android.widget.FrameLayout;\n",
             "import com.small.tools.annotationprocessor.interfaces.InflateInjector;\n",
             "import android.content.Context;\n",
-            "import com.small.tools.annotationprocessor.extractor.InjectorSupports;\n"
+            "import com.small.tools.annotationprocessor.extractor.InjectorSupports;\n",
+            "import android.view.View.OnClickListener;\n"
 
     };
 
     private ArrayList<InflaterChildView> mSubViews;
+    private ArrayList<InflaterClickListener> mClickListeners;
     private InflaterContentView mContentView;
     private TypeElement mTypeElement;
 
     public InflaterClass(TypeElement element) {
         mTypeElement = element;
         mSubViews = new ArrayList<>();
+        mClickListeners = new ArrayList<>();
         initUis();
+        initClickListeners();
     }
 
     private void initUis() {
@@ -63,8 +66,23 @@ public class InflaterClass {
         }
     }
 
+    private void initClickListeners() {
+        for (Element element : mTypeElement.getEnclosedElements()) {
+            if (element.getKind() == ElementKind.METHOD) {
+                if (element.getAnnotation(BindClick.class) != null
+                        || element.getAnnotation(BindClick2.class) != null) {
+                    addClickListener(new InflaterClickListener((ExecutableElement) element));
+                }
+            }
+        }
+    }
+
     public void addSubView(InflaterChildView subView) {
         mSubViews.add(subView);
+    }
+
+    public void addClickListener(InflaterClickListener clickListener) {
+        mClickListeners.add(clickListener);
     }
 
     public void setContentView(InflaterContentView contentView) {
@@ -130,15 +148,20 @@ public class InflaterClass {
         lines.append("return mContentView;\n");
         lines.append("}\n");
 
-        lines.append(TAB).append("private void findViews(T target, View contentView) {\n");
-        lines.append("Context mContext = contentView.getContext();\n");
+        lines.append(TAB).append("private void findViews(T target, View mContentView) {\n");
+        lines.append("Context mContext = mContentView.getContext();\n");
         for (InflaterChildView tmp : mSubViews) {
             if (tmp.isLayout()) {
                 lines.append(tmp.findLayout());
             } else {
-                lines.append(tmp.findView("contentView"));
+                lines.append(tmp.findView("mContentView"));
             }
         }
+
+        for (InflaterClickListener tmp : mClickListeners) {
+            lines.append(tmp.setOnClickListener());
+        }
+
         lines.append(TAB).append("}");
 
         lines.append("}");
